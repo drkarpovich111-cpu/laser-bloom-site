@@ -3,21 +3,32 @@ const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.queryS
 // Load the shared motion layer on every JUST DENT page.
 (()=>{const script=document.currentScript;const href=new URL('effects.css',script?.src||location.href).href;if(!document.querySelector(`link[href="${href}"]`)){const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)}})();
 
-// Branded page transition. It is created from JS so all pages get it automatically.
+// Premium 3D tooth page transition. Created from JS so every page gets it automatically.
 const transition=document.createElement('div');
 transition.className='jd-page-transition is-arriving';
 transition.setAttribute('aria-hidden','true');
-transition.innerHTML=`<div class="jd-loader"><div class="jd-tooth-wrap"><svg class="jd-tooth" viewBox="0 0 64 64" pathLength="1" aria-hidden="true"><path pathLength="1" d="M20.7 8.7c5.1 0 7.2 3.1 11.3 3.1s6.2-3.1 11.3-3.1c7.1 0 12 5.7 10.7 13.4-1 5.5-4.4 9.2-6.2 15.1-2.2 7.4-4.7 12.4-8.7 12.4-3.1 0-3.6-8.6-7.1-8.6s-4 8.6-7.1 8.6c-4 0-6.5-5-8.7-12.4-1.8-5.9-5.2-9.6-6.2-15.1C8.7 14.4 13.6 8.7 20.7 8.7Z"/></svg></div><div class="jd-loader-title">JUST DENT</div><div class="jd-loader-line"></div><div class="jd-loader-sub">сучасна стоматологія</div></div>`;
+transition.innerHTML=`
+  <div class="jd-fog jd-fog-a"></div>
+  <div class="jd-fog jd-fog-b"></div>
+  <div class="jd-tooth-stage">
+    <div class="jd-tooth-aura"></div>
+    <div class="jd-tooth-3d">
+      <svg class="jd-tooth-layer jd-tooth-back" viewBox="0 0 120 140" aria-hidden="true"><path d="M37 14c13.5 0 18 8 23 8 5.2 0 9.6-8 23-8 19 0 31.4 15.3 27.7 35.6-2.6 14.7-11.7 24-16 39.5-5.8 20.1-12.4 32.4-22.6 32.4-8.2 0-9.4-22.4-15.2-22.4s-6.9 22.4-15.2 22.4c-10.3 0-16.8-12.3-22.6-32.4C14.1 73.6 5 64.3 2.3 49.6-1.3 29.3 11 14 37 14Z"/></svg>
+      <svg class="jd-tooth-layer jd-tooth-mid" viewBox="0 0 120 140" aria-hidden="true"><path d="M37 14c13.5 0 18 8 23 8 5.2 0 9.6-8 23-8 19 0 31.4 15.3 27.7 35.6-2.6 14.7-11.7 24-16 39.5-5.8 20.1-12.4 32.4-22.6 32.4-8.2 0-9.4-22.4-15.2-22.4s-6.9 22.4-15.2 22.4c-10.3 0-16.8-12.3-22.6-32.4C14.1 73.6 5 64.3 2.3 49.6-1.3 29.3 11 14 37 14Z"/></svg>
+      <svg class="jd-tooth-layer jd-tooth-front" viewBox="0 0 120 140" aria-hidden="true"><defs><linearGradient id="jdToothGold" x1="22" y1="18" x2="94" y2="121" gradientUnits="userSpaceOnUse"><stop stop-color="#fffdf8"/><stop offset=".28" stop-color="#f3e6cc"/><stop offset=".55" stop-color="#c99a4d"/><stop offset=".73" stop-color="#fff4d8"/><stop offset="1" stop-color="#9d6b2d"/></linearGradient><linearGradient id="jdToothShine" x1="30" y1="20" x2="76" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity=".95"/><stop offset=".34" stop-color="white" stop-opacity=".15"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient></defs><path class="jd-tooth-main" d="M37 14c13.5 0 18 8 23 8 5.2 0 9.6-8 23-8 19 0 31.4 15.3 27.7 35.6-2.6 14.7-11.7 24-16 39.5-5.8 20.1-12.4 32.4-22.6 32.4-8.2 0-9.4-22.4-15.2-22.4s-6.9 22.4-15.2 22.4c-10.3 0-16.8-12.3-22.6-32.4C14.1 73.6 5 64.3 2.3 49.6-1.3 29.3 11 14 37 14Z" fill="url(#jdToothGold)"/><path class="jd-tooth-highlight" d="M31 26c8-5 15-1 22 2 6 3 13-5 24-4 14 2 21 13 18 28-2 11-8 18-11 27" fill="none" stroke="url(#jdToothShine)" stroke-width="6" stroke-linecap="round"/></svg>
+    </div>
+    <span class="jd-spark jd-spark-1"></span><span class="jd-spark jd-spark-2"></span><span class="jd-spark jd-spark-3"></span>
+  </div>`;
 document.body.appendChild(transition);
 
 const progress=document.createElement('div');progress.className='jd-scroll-progress';progress.innerHTML='<span></span>';document.body.appendChild(progress);const progressBar=$('span',progress);
 
-requestAnimationFrame(()=>requestAnimationFrame(()=>{setTimeout(()=>transition.classList.remove('is-arriving'),420)}));
-window.addEventListener('pageshow',()=>{transition.classList.remove('is-active');setTimeout(()=>transition.classList.remove('is-arriving'),180)});
+requestAnimationFrame(()=>requestAnimationFrame(()=>{setTimeout(()=>transition.classList.remove('is-arriving'),520)}));
+window.addEventListener('pageshow',()=>{transition.classList.remove('is-active');setTimeout(()=>transition.classList.remove('is-arriving'),200)});
 
 function isInternalNavigation(a,e){if(!a||a.target==='_blank'||a.hasAttribute('download')||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return false;const raw=a.getAttribute('href');if(!raw||raw.startsWith('#')||raw.startsWith('mailto:')||raw.startsWith('tel:')||raw.startsWith('javascript:'))return false;let url;try{url=new URL(a.href,location.href)}catch{return false}if(url.origin!==location.origin)return false;if(url.pathname===location.pathname&&url.search===location.search&&url.hash)return false;return true}
 
-document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!isInternalNavigation(a,e))return;e.preventDefault();transition.classList.remove('is-arriving');transition.classList.add('is-active');setTimeout(()=>{location.href=a.href},340)});
+document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!isInternalNavigation(a,e))return;e.preventDefault();transition.classList.remove('is-arriving');transition.classList.add('is-active');setTimeout(()=>{location.href=a.href},430)});
 
 // Mobile menu.
 const menuBtn=$('.menu-btn');const nav=$('.main-nav');
