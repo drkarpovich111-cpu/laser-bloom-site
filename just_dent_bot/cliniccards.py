@@ -1,9 +1,12 @@
 import os
+from datetime import datetime, timedelta
 from typing import Any, Dict, Optional, Tuple
+from zoneinfo import ZoneInfo
 
 import httpx
 
 API_BASE = "https://cliniccards.com/api"
+KYIV_TZ = ZoneInfo("Europe/Kyiv")
 
 # Accept several sensible names because the key may already have been saved in Render
 # by a previous setup flow. Never print the secret value.
@@ -125,8 +128,67 @@ def _count(value: Any) -> int:
     return 0
 
 
+def _safe_staff(staff: Any) -> list:
+    out = []
+    for row in staff if isinstance(staff, list) else []:
+        if not isinstance(row, dict):
+            continue
+        out.append({
+            "doctor_id": row.get("doctor_id"),
+            "firstname": row.get("firstname"),
+            "lastname": row.get("lastname"),
+            "role": row.get("role"),
+        })
+    return out[:20]
+
+
+def _safe_cabinets(cabinets: Any) -> list:
+    out = []
+    for row in cabinets if isinstance(cabinets, list) else []:
+        if not isinstance(row, dict):
+            continue
+        out.append({"cabinet_id": row.get("cabinet_id"), "name": row.get("name")})
+    return out[:30]
+
+
+def _safe_booking_items(items: Any) -> list:
+    out = []
+    for row in items if isinstance(items, list) else []:
+        if not isinstance(row, dict):
+            continue
+        services = []
+        for item in row.get("booking_items", []) if isinstance(row.get("booking_items"), list) else []:
+            if not isinstance(item, dict):
+                continue
+            services.append({
+                "price_item_id": item.get("price_item_id"),
+                "price_item_name": item.get("price_item_name"),
+                "execution_time": item.get("execution_time"),
+            })
+        out.append({
+            "specialist_id": row.get("specialist_id"),
+            "specialist_name": row.get("specialist_name"),
+            "services": services[:20],
+        })
+    return out[:20]
+
+
+def _safe_shifts(shifts: Any) -> list:
+    out = []
+    for row in shifts if isinstance(shifts, list) else []:
+        if not isinstance(row, dict):
+            continue
+        out.append({
+            "doctor_id": row.get("doctor_id"),
+            "cabinet_id": row.get("schedule_cabinets_id"),
+            "shift_start": row.get("shift_start"),
+            "shift_end": row.get("shift_end"),
+        })
+    return out[:50]
+
+
 def safe_probe_sync() -> Dict[str, Any]:
-    """Check that ClinicCards is reachable without logging secrets or patient data."""
+    """Check ClinicCards without exposing the secret or any patient data."""
     key, env_name = _discover_key()
     summary: Dict[str, Any] = {
         "configured": bool(key),
@@ -137,19 +199,29 @@ def safe_probe_sync() -> Dict[str, Any]:
         return summary
 
     try:
+        today = datetime.now(KYIV_TZ).date()
+        date_from = today.isoformat()
+        date_to = (today + timedelta(days=14)).isoformat()
+
         staff = request_sync("GET", "staff")
         items = request_sync("GET", "booking-items")
         cabinets = request_sync("GET", "cabinets")
         settings = request_sync("GET", "booking-settings")
+        shifts = request_sync("GET", "schedule-shifts", params={"from": date_from, "to": date_to})
+
         summary.update(
             {
                 "reachable": True,
                 "staff_count": _count(staff),
                 "booking_items_count": _count(items),
                 "cabinets_count": _count(cabinets),
-                "booking_settings_keys": sorted(list(settings.keys()))[:20] if isinstance(settings, dict) else [],
-                "cabinet_field_names": sorted(list(cabinets[0].keys()))[:20] if isinstance(cabinets, list) and cabinets and isinstance(cabinets[0], dict) else [],
-                "staff_field_names": sorted(list(staff[0].keys()))[:20] if isinstance(staff, list) and staff and isinstance(staff[0], dict) else [],
+                "booking_interval": settings.get("booking_interval") if isinstance(settings, dict) else None,
+                "staff": _safe_staff(staff),
+                "cabinets": _safe_cabinets(cabinets),
+                "booking_items": _safe_booking_items(items),
+                "schedule_range": [date_from, date_to],
+                "shift_count": _count(shifts),
+                "shifts": _safe_shifts(shifts),
             }
         )
     except Exception as exc:
