@@ -30,7 +30,6 @@ def _discover_key() -> Tuple[str, Optional[str]]:
         if value:
             return value, name
 
-    # Also accept a custom variable name if it clearly refers to ClinicCards.
     for name, value in os.environ.items():
         upper = name.upper()
         if "CLINIC" in upper and "CARD" in upper and any(x in upper for x in ("KEY", "TOKEN", "API")):
@@ -131,23 +130,21 @@ def _count(value: Any) -> int:
 def _safe_staff(staff: Any) -> list:
     out = []
     for row in staff if isinstance(staff, list) else []:
-        if not isinstance(row, dict):
-            continue
-        out.append({
-            "doctor_id": row.get("doctor_id"),
-            "firstname": row.get("firstname"),
-            "lastname": row.get("lastname"),
-            "role": row.get("role"),
-        })
+        if isinstance(row, dict):
+            out.append({
+                "doctor_id": row.get("doctor_id"),
+                "firstname": row.get("firstname"),
+                "lastname": row.get("lastname"),
+                "role": row.get("role"),
+            })
     return out[:20]
 
 
 def _safe_cabinets(cabinets: Any) -> list:
     out = []
     for row in cabinets if isinstance(cabinets, list) else []:
-        if not isinstance(row, dict):
-            continue
-        out.append({"cabinet_id": row.get("cabinet_id"), "name": row.get("name")})
+        if isinstance(row, dict):
+            out.append({"cabinet_id": row.get("cabinet_id"), "name": row.get("name")})
     return out[:30]
 
 
@@ -158,13 +155,12 @@ def _safe_booking_items(items: Any) -> list:
             continue
         services = []
         for item in row.get("booking_items", []) if isinstance(row.get("booking_items"), list) else []:
-            if not isinstance(item, dict):
-                continue
-            services.append({
-                "price_item_id": item.get("price_item_id"),
-                "price_item_name": item.get("price_item_name"),
-                "execution_time": item.get("execution_time"),
-            })
+            if isinstance(item, dict):
+                services.append({
+                    "price_item_id": item.get("price_item_id"),
+                    "price_item_name": item.get("price_item_name"),
+                    "execution_time": item.get("execution_time"),
+                })
         out.append({
             "specialist_id": row.get("specialist_id"),
             "specialist_name": row.get("specialist_name"),
@@ -176,25 +172,44 @@ def _safe_booking_items(items: Any) -> list:
 def _safe_shifts(shifts: Any) -> list:
     out = []
     for row in shifts if isinstance(shifts, list) else []:
+        if isinstance(row, dict):
+            out.append({
+                "doctor_id": row.get("doctor_id"),
+                "cabinet_id": row.get("schedule_cabinets_id"),
+                "shift_start": row.get("shift_start"),
+                "shift_end": row.get("shift_end"),
+            })
+    return out[:50]
+
+
+def _safe_busy(rows: Any, kind: str) -> list:
+    """Return schedule-only fields. Never include patient id/name/phone/note."""
+    out = []
+    for row in rows if isinstance(rows, list) else []:
         if not isinstance(row, dict):
             continue
-        out.append({
-            "doctor_id": row.get("doctor_id"),
-            "cabinet_id": row.get("schedule_cabinets_id"),
-            "shift_start": row.get("shift_start"),
-            "shift_end": row.get("shift_end"),
-        })
-    return out[:50]
+        if kind == "visit":
+            out.append({
+                "doctor_id": row.get("doctor_id") or row.get("created_by_id"),
+                "cabinet_id": row.get("cabinet_id") or row.get("schedule_cabinets_id"),
+                "start": row.get("visit_start"),
+                "end": row.get("visit_end"),
+                "status": row.get("status"),
+            })
+        else:
+            out.append({
+                "doctor_id": row.get("doctor_id") or row.get("created_by_id"),
+                "cabinet_id": row.get("cabinet_id") or row.get("schedule_cabinets_id"),
+                "start": row.get("space_start"),
+                "end": row.get("space_end"),
+            })
+    return out[:100]
 
 
 def safe_probe_sync() -> Dict[str, Any]:
     """Check ClinicCards without exposing the secret or any patient data."""
     key, env_name = _discover_key()
-    summary: Dict[str, Any] = {
-        "configured": bool(key),
-        "env_name": env_name,
-        "reachable": False,
-    }
+    summary: Dict[str, Any] = {"configured": bool(key), "env_name": env_name, "reachable": False}
     if not key:
         return summary
 
@@ -202,29 +217,33 @@ def safe_probe_sync() -> Dict[str, Any]:
         today = datetime.now(KYIV_TZ).date()
         date_from = today.isoformat()
         date_to = (today + timedelta(days=14)).isoformat()
+        period = {"from": date_from, "to": date_to}
 
         staff = request_sync("GET", "staff")
         items = request_sync("GET", "booking-items")
         cabinets = request_sync("GET", "cabinets")
         settings = request_sync("GET", "booking-settings")
-        shifts = request_sync("GET", "schedule-shifts", params={"from": date_from, "to": date_to})
+        shifts = request_sync("GET", "schedule-shifts", params=period)
+        visits = request_sync("GET", "visits", params=period)
+        spaces = request_sync("GET", "schedule-spaces", params=period)
 
-        summary.update(
-            {
-                "reachable": True,
-                "staff_count": _count(staff),
-                "booking_items_count": _count(items),
-                "cabinets_count": _count(cabinets),
-                "booking_interval": settings.get("booking_interval") if isinstance(settings, dict) else None,
-                "staff": _safe_staff(staff),
-                "cabinets": _safe_cabinets(cabinets),
-                "booking_items": _safe_booking_items(items),
-                "schedule_range": [date_from, date_to],
-                "shift_count": _count(shifts),
-                "shifts": _safe_shifts(shifts),
-            }
-        )
+        summary.update({
+            "reachable": True,
+            "staff_count": _count(staff),
+            "booking_items_count": _count(items),
+            "cabinets_count": _count(cabinets),
+            "booking_interval": settings.get("booking_interval") if isinstance(settings, dict) else None,
+            "staff": _safe_staff(staff),
+            "cabinets": _safe_cabinets(cabinets),
+            "booking_items": _safe_booking_items(items),
+            "schedule_range": [date_from, date_to],
+            "shift_count": _count(shifts),
+            "shifts": _safe_shifts(shifts),
+            "visit_count": _count(visits),
+            "visits_schedule_only": _safe_busy(visits, "visit"),
+            "space_count": _count(spaces),
+            "spaces_schedule_only": _safe_busy(spaces, "space"),
+        })
     except Exception as exc:
-        # Error text may be useful, but never includes our token because the token is only in a header.
         summary["error"] = f"{type(exc).__name__}: {str(exc)[:200]}"
     return summary
