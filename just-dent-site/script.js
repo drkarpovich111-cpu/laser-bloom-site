@@ -74,3 +74,6 @@ const progress=document.createElement('div');progress.className='jd-scroll-progr
 
 // Button ripple + demo form feedback.
 document.addEventListener('pointerdown',e=>{const btn=e.target.closest('.btn');if(!btn)return;const r=btn.getBoundingClientRect(),ripple=document.createElement('span');ripple.className='jd-ripple';ripple.style.left=`${e.clientX-r.left}px`;ripple.style.top=`${e.clientY-r.top}px`;btn.appendChild(ripple);setTimeout(()=>ripple.remove(),760)});$('[data-form-submit]')?.addEventListener('click',()=>{const status=$('.form-status');if(status)status.textContent='Демо-форма: підключимо Telegram, Viber або Cliniccards після додавання контактів.'});
+
+// Load premium icon shatter transitions after the base loader is ready.
+(()=>{const current=document.currentScript;const s=document.createElement('script');s.src=new URL('transition-shatter.js',current?.src||location.href).href;s.defer=true;document.body.appendChild(s)})();
