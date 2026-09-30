@@ -64,7 +64,7 @@
   }
 
   let navigating=false;
-  document.addEventListener('click',e=>{
+  window.addEventListener('click',e=>{
     const a=e.target.closest('a[href]');
     if(!internalLink(a,e)||navigating)return;
     e.preventDefault();e.stopImmediatePropagation();navigating=true;
