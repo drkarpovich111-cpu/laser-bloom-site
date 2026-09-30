@@ -16,13 +16,6 @@ TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}" if BOT_TOKEN else ""
 app = FastAPI(title="Just Dent Telegram")
 STATE: Dict[int, Dict[str, Any]] = {}
 
-# Тимчасові тестові слоти. У бойовій версії їх замінить живий розклад Cliniccards.
-# Правило Just Dent: пацієнту показуємо тільки часи на :00 або :30.
-TEST_SLOTS = {
-    "Ужгород": ["Сьогодні 18:30", "Завтра 10:30", "Завтра 15:30", "Завтра 17:00"],
-    "Міжгір’я": ["П’ятниця 11:00", "П’ятниця 14:30", "Субота 10:00"],
-}
-
 LANG_NAMES = {"uk": "Українська", "sk": "Slovenčina", "en": "English"}
 
 
@@ -32,7 +25,6 @@ def st(chat_id: int):
         {
             "step": "start",
             "city": None,
-            "slot": None,
             "name": None,
             "phone": None,
             "concern": "",
@@ -129,31 +121,6 @@ def city_label(city: str, lang: str) -> str:
     return labels.get(city, {}).get(lang, city)
 
 
-def slot_label(slot: str, lang: str) -> str:
-    if lang == "sk":
-        return (
-            slot.replace("Сьогодні", "Dnes")
-            .replace("Завтра", "Zajtra")
-            .replace("П’ятниця", "Piatok")
-            .replace("Субота", "Sobota")
-        )
-    if lang == "en":
-        return (
-            slot.replace("Сьогодні", "Today")
-            .replace("Завтра", "Tomorrow")
-            .replace("П’ятниця", "Friday")
-            .replace("Субота", "Saturday")
-        )
-    return slot
-
-
-def is_allowed_slot(slot_text: str) -> bool:
-    match = re.search(r"\b(\d{1,2}):(\d{2})\b", slot_text or "")
-    if not match:
-        return False
-    return int(match.group(2)) in (0, 30)
-
-
 def is_emergency(text: str) -> bool:
     s = lower(text)
     red = [
@@ -182,15 +149,6 @@ def is_ortho(text: str) -> bool:
         "брекет", "прикус", "ортодонт", "елайнер",
         "strojček", "zhryz", "ortodont", "aligner",
         "braces", "bite", "orthodont",
-    ])
-
-
-def is_booking(text: str) -> bool:
-    s = lower(text)
-    return any(x in s for x in [
-        "запис", "прийом", "вільн", "хочу до", "можна завтра", "лікар",
-        "objedna", "termín", "voľn", "chcem k", "zajtra", "lekár",
-        "appointment", "book", "available", "tomorrow", "doctor", "dentist",
     ])
 
 
@@ -296,7 +254,7 @@ async def notify_admin_booking(patient_chat_id: int, state: Dict[str, Any], dire
         f"👤 <b>{state.get('name') or 'не вказано'}</b>\n"
         f"📞 <code>{state.get('phone') or 'не вказано'}</code>\n"
         f"📍 {state.get('city') or 'не вказано'}\n"
-        f"🕒 <b>{state.get('slot') or 'не вказано'}</b>\n"
+        f"🕒 Час: <b>підбирає адміністратор</b>\n"
         f"🦷 {direction}\n"
         f"🌐 {LANG_NAMES.get(lang, lang)}\n"
         f"💬 {concern}\n\n"
@@ -313,7 +271,6 @@ async def start_flow(chat_id: int, message_id: int | None = None, lang: str | No
     STATE[chat_id] = {
         "step": "start",
         "city": None,
-        "slot": None,
         "name": None,
         "phone": None,
         "concern": "",
@@ -348,30 +305,33 @@ async def ask_city(chat_id: int, message_id: int | None = None, intro: str | Non
         await send(chat_id, text, keyboard)
 
 
-async def show_slots(chat_id: int, message_id: int | None = None):
+async def ask_name_after_city(chat_id: int, message_id: int):
     s = st(chat_id)
     lang = get_lang(chat_id)
-    city = s.get("city") or "Ужгород"
-    s["step"] = "choose_slot"
-    allowed_slots = [slot for slot in TEST_SLOTS[city] if is_allowed_slot(slot)]
-    s["visible_slots"] = allowed_slots
-
-    rows = [[(f"🕒 {slot_label(slot, lang)}", f"slot:{i}")] for i, slot in enumerate(allowed_slots)]
-    rows.append([
-        (tr(lang, "⬅️ Інша клініка", "⬅️ Iná klinika", "⬅️ Other clinic"), "book"),
-        (tr(lang, "🏠 Меню", "🏠 Menu", "🏠 Menu"), "home"),
-    ])
+    city = city_label(s.get("city") or "", lang)
+    s["step"] = "ask_name"
 
     text = tr(
         lang,
-        f"🗓 <b>Оберіть зручний час</b>\n📍 {city_label(city, lang)}\n\nДоступні найближчі варіанти:\n\n<i>Час для запису показується тільки на :00 або :30.</i>",
-        f"🗓 <b>Vyberte si vhodný čas</b>\n📍 {city_label(city, lang)}\n\nNajbližšie dostupné termíny:\n\n<i>Termíny zobrazujeme iba na :00 alebo :30.</i>",
-        f"🗓 <b>Choose a convenient time</b>\n📍 {city_label(city, lang)}\n\nNearest available times:\n\n<i>Appointments are shown only on :00 or :30.</i>",
+        f"👌 <b>Клініку обрано</b>\n\n📍 {city}\n\n"
+        "Вільні години бот не показує. Адміністратор підбере зручний час і зв’яжеться з вами.\n\n"
+        "👤 <b>Напишіть ваше ім’я та прізвище:</b>",
+        f"👌 <b>Klinika je vybraná</b>\n\n📍 {city}\n\n"
+        "Voľné termíny bot nezobrazuje. Administrátor vám navrhne vhodný čas a ozve sa vám.\n\n"
+        "👤 <b>Napíšte svoje meno a priezvisko:</b>",
+        f"👌 <b>Clinic selected</b>\n\n📍 {city}\n\n"
+        "The bot does not show available times. An administrator will arrange a convenient time and contact you.\n\n"
+        "👤 <b>Enter your first and last name:</b>",
     )
-    if message_id:
-        await edit(chat_id, message_id, text, kb(rows))
-    else:
-        await send(chat_id, text, kb(rows))
+    await edit(
+        chat_id,
+        message_id,
+        text,
+        kb([
+            [(tr(lang, "⬅️ Інша клініка", "⬅️ Iná klinika", "⬅️ Other clinic"), "book")],
+            [(tr(lang, "🏠 Меню", "🏠 Menu", "🏠 Menu"), "home")],
+        ]),
+    )
 
 
 async def urgent(chat_id: int, text: str):
@@ -416,7 +376,6 @@ async def handle_text(chat_id: int, text: str, telegram_lang: str | None = None)
             await ask_language(chat_id)
         return
 
-    # Якщо мова ще не визначена, пробуємо визначити її за першим повідомленням.
     if not s.get("lang"):
         detected = language_from_text(text) or language_from_telegram(telegram_lang)
         if detected:
@@ -478,27 +437,25 @@ async def handle_text(chat_id: int, text: str, telegram_lang: str | None = None)
         )
         followup = tr(
             lang,
-            "Адміністратор Just Dent перевірить час і зв’яжеться з вами для підтвердження візиту. 🤍",
-            "Administrátor Just Dent skontroluje termín a kontaktuje vás, aby návštevu potvrdil. 🤍",
-            "A Just Dent administrator will check the time and contact you to confirm the visit. 🤍",
+            "Адміністратор Just Dent зв’яжеться з вами та запропонує зручний вільний час. 🤍",
+            "Administrátor Just Dent sa vám ozve a ponúkne vhodný voľný termín. 🤍",
+            "A Just Dent administrator will contact you and offer a convenient available time. 🤍",
         )
         await send(
             chat_id,
             f"{confirmation}\n\n"
             f"👤 {s.get('name')}\n"
             f"📍 {city_label(s.get('city') or '', lang)}\n"
-            f"🕒 <b>{slot_label(s.get('slot') or '', lang)}</b>\n"
             f"🦷 {user_direction}\n"
             f"📞 {s.get('phone')}\n\n"
             f"{followup}",
             kb([
-                [(tr(lang, "🔄 Змінити час", "🔄 Zmeniť čas", "🔄 Change time"), "reschedule")],
+                [(tr(lang, "📍 Змінити клініку", "📍 Zmeniť kliniku", "📍 Change clinic"), "book")],
                 [(tr(lang, "🏠 Головне меню", "🏠 Hlavné menu", "🏠 Main menu"), "home")],
             ]),
         )
         return
 
-    # Будь-який звичайний текст сприймаємо як опис проблеми, а не змушуємо користувача тиснути кнопки.
     s["concern"] = text.strip()
 
     if is_prosth(text):
@@ -506,12 +463,12 @@ async def handle_text(chat_id: int, text: str, telegram_lang: str | None = None)
             chat_id,
             tr(
                 lang,
-                "✨ <b>Коронки та вініри</b>\n\nТочна вартість залежить від матеріалу та клінічної ситуації. Найкраще почати з консультації ортопеда.\n\nМожу одразу показати найближчий час.",
-                "✨ <b>Korunky a fazety</b>\n\nPresná cena závisí od materiálu a klinickej situácie. Najlepšie je začať konzultáciou s protetikom.\n\nMôžem vám hneď ukázať najbližšie termíny.",
-                "✨ <b>Crowns & veneers</b>\n\nThe exact price depends on the material and clinical situation. The best first step is a consultation with a prosthodontist.\n\nI can show you the nearest available times now.",
+                "✨ <b>Коронки та вініри</b>\n\nТочна вартість залежить від матеріалу та клінічної ситуації. Найкраще почати з консультації ортопеда.\n\nОберіть клініку — адміністратор підбере зручний час.",
+                "✨ <b>Korunky a fazety</b>\n\nPresná cena závisí od materiálu a klinickej situácie. Najlepšie je začať konzultáciou s protetikom.\n\nVyberte kliniku — administrátor vám navrhne vhodný termín.",
+                "✨ <b>Crowns & veneers</b>\n\nThe exact price depends on the material and clinical situation. The best first step is a consultation with a prosthodontist.\n\nChoose a clinic and an administrator will arrange a convenient time.",
             ),
             kb([
-                [(tr(lang, "📅 Обрати час", "📅 Vybrať termín", "📅 Choose a time"), "book")],
+                [(tr(lang, "📅 Записатися", "📅 Objednať sa", "📅 Book"), "book")],
                 [(tr(lang, "🏠 Головне меню", "🏠 Hlavné menu", "🏠 Main menu"), "home")],
             ]),
         )
@@ -519,9 +476,9 @@ async def handle_text(chat_id: int, text: str, telegram_lang: str | None = None)
 
     intro = tr(
         lang,
-        "💬 Дякую, опис проблеми збережено. Тепер оберіть клініку — підберемо найближчий час.",
-        "💬 Ďakujem, váš opis problému som uložil. Teraz vyberte kliniku a nájdeme najbližší termín.",
-        "💬 Thank you, I've saved your description. Now choose a clinic and we'll find the nearest available time.",
+        "💬 Дякую, опис проблеми збережено. Тепер оберіть клініку — адміністратор підбере зручний час.",
+        "💬 Ďakujem, váš opis problému som uložil. Teraz vyberte kliniku — administrátor vám navrhne vhodný termín.",
+        "💬 Thank you, I've saved your description. Now choose a clinic and an administrator will arrange a convenient time.",
     )
     await ask_city(chat_id, intro=intro)
 
@@ -588,55 +545,16 @@ async def handle_callback(chat_id: int, message_id: int, data: str, callback_id:
         s["concern"] = tr(lang, "коронки / вініри", "korunky / fazety", "crowns / veneers")
         intro = tr(
             lang,
-            "✨ Підберемо найближчий час для консультації ортопеда.",
-            "✨ Nájdeme vám najbližší termín na konzultáciu s protetikom.",
-            "✨ We'll find the nearest consultation time with a prosthodontist.",
+            "✨ Оберіть клініку — адміністратор підбере зручний час для консультації ортопеда.",
+            "✨ Vyberte kliniku — administrátor vám navrhne vhodný termín na konzultáciu s protetikom.",
+            "✨ Choose a clinic and an administrator will arrange a convenient prosthodontic consultation time.",
         )
         await ask_city(chat_id, message_id, intro)
         return
 
     if data.startswith("city:"):
         s["city"] = data.split(":", 1)[1]
-        await show_slots(chat_id, message_id)
-        return
-
-    if data.startswith("slot:"):
-        idx = int(data.split(":", 1)[1])
-        visible_slots = s.get("visible_slots") or []
-        if idx < 0 or idx >= len(visible_slots):
-            await edit(
-                chat_id,
-                message_id,
-                tr(lang, "⚠️ Цей час уже недоступний. Оберіть інший варіант.", "⚠️ Tento termín už nie je dostupný. Vyberte si iný.", "⚠️ This time is no longer available. Please choose another."),
-                kb([
-                    [(tr(lang, "🔄 Оновити час", "🔄 Obnoviť termíny", "🔄 Refresh times"), "reschedule")],
-                    [(tr(lang, "🏠 Меню", "🏠 Menu", "🏠 Menu"), "home")],
-                ]),
-            )
-            return
-
-        s["slot"] = visible_slots[idx]
-        s["step"] = "ask_name"
-        selected = slot_label(s["slot"], lang)
-        city = city_label(s.get("city") or "", lang)
-        await edit(
-            chat_id,
-            message_id,
-            tr(
-                lang,
-                f"👌 <b>Час обрано</b>\n\n🕒 <b>{selected}</b>\n📍 {city}\n\nЗалишилося зовсім трохи.\n👤 <b>Напишіть ваше ім’я та прізвище:</b>",
-                f"👌 <b>Termín je vybraný</b>\n\n🕒 <b>{selected}</b>\n📍 {city}\n\nUž len pár údajov.\n👤 <b>Napíšte svoje meno a priezvisko:</b>",
-                f"👌 <b>Time selected</b>\n\n🕒 <b>{selected}</b>\n📍 {city}\n\nJust a little more information.\n👤 <b>Enter your first and last name:</b>",
-            ),
-            kb([
-                [(tr(lang, "🔄 Інший час", "🔄 Iný termín", "🔄 Different time"), "reschedule")],
-                [(tr(lang, "🏠 Меню", "🏠 Menu", "🏠 Menu"), "home")],
-            ]),
-        )
-        return
-
-    if data == "reschedule":
-        await show_slots(chat_id, message_id)
+        await ask_name_after_city(chat_id, message_id)
         return
 
 
