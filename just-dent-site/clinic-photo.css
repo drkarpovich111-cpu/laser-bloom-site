@@ -11,6 +11,14 @@
 .hero-visual:has(.photo-placeholder){background:linear-gradient(145deg,#17181c,#202126 60%,#2d241a)}
 .hero-visual .hero-note{right:30px;top:auto;bottom:28px;width:auto;max-width:230px;padding:11px 15px;border-radius:16px;background:rgba(16,17,20,.68);border:1px solid rgba(223,189,121,.18);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-family:Manrope,system-ui,sans-serif;font-style:normal;font-size:12px;line-height:1.35;letter-spacing:.02em;transform:none;color:#efe7da;box-shadow:0 12px 28px rgba(0,0,0,.24)}
 
+/* Homepage doctor cards: real high-quality portraits instead of letter placeholders. */
+.doctors-grid .doctor-card .doctor-photo{background-size:cover!important;background-repeat:no-repeat!important;background-position:center 16%!important;border-color:rgba(223,189,121,.14)!important}
+.doctors-grid .doctor-card .doctor-photo span{display:none!important}
+.doctors-grid .doctor-card:nth-child(1) .doctor-photo{background-image:url("images/doctors/rostyslav-hq.avif")!important}
+.doctors-grid .doctor-card:nth-child(2) .doctor-photo{background-image:url("images/doctors/slava-hq.avif")!important}
+.doctors-grid .doctor-card:nth-child(3) .doctor-photo{background-image:url("images/doctors/vlad-hq.avif")!important}
+.doctors-grid .doctor-card:nth-child(4) .doctor-photo{background-image:url("images/doctors/andriy-hq.avif")!important}
+
 .footer-socials{
   position:fixed!important;
   right:22px;
@@ -49,4 +57,5 @@
 @media(max-width:520px){
   .hero-visual .hero-note{right:18px;bottom:18px;max-width:190px;font-size:11px}
   .footer-socials{right:12px;bottom:14px}
+  .doctors-grid .doctor-card .doctor-photo{background-position:center 14%!important}
 }
