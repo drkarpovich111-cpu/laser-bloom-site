@@ -1,85 +1,76 @@
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
-// Shared premium motion layer for every JUST DENT page.
+// Shared premium motion layer.
 (()=>{const script=document.currentScript;const href=new URL('effects.css',script?.src||location.href).href;if(!document.querySelector(`link[href="${href}"]`)){const link=document.createElement('link');link.rel='stylesheet';link.href=href;document.head.appendChild(link)}})();
 
-// Dark transition screen + dimensional tooth + particle disintegration.
-const transition=document.createElement('div');
-transition.className='jd-page-transition is-arriving';
-transition.setAttribute('aria-hidden','true');
-transition.innerHTML=`
-  <div class="jd-fog jd-fog-a"></div><div class="jd-fog jd-fog-b"></div>
-  <div class="jd-tooth-stage">
-    <div class="jd-tooth-aura"></div>
-    <div class="jd-tooth-3d">
-      <svg class="jd-tooth-layer jd-tooth-back" viewBox="0 0 120 140"><path d="M37 14c13.5 0 18 8 23 8 5.2 0 9.6-8 23-8 19 0 31.4 15.3 27.7 35.6-2.6 14.7-11.7 24-16 39.5-5.8 20.1-12.4 32.4-22.6 32.4-8.2 0-9.4-22.4-15.2-22.4s-6.9 22.4-15.2 22.4c-10.3 0-16.8-12.3-22.6-32.4C14.1 73.6 5 64.3 2.3 49.6-1.3 29.3 11 14 37 14Z"/></svg>
-      <svg class="jd-tooth-layer jd-tooth-mid" viewBox="0 0 120 140"><path d="M37 14c13.5 0 18 8 23 8 5.2 0 9.6-8 23-8 19 0 31.4 15.3 27.7 35.6-2.6 14.7-11.7 24-16 39.5-5.8 20.1-12.4 32.4-22.6 32.4-8.2 0-9.4-22.4-15.2-22.4s-6.9 22.4-15.2 22.4c-10.3 0-16.8-12.3-22.6-32.4C14.1 73.6 5 64.3 2.3 49.6-1.3 29.3 11 14 37 14Z"/></svg>
-      <svg class="jd-tooth-layer jd-tooth-front" viewBox="0 0 120 140"><defs><linearGradient id="jdToothGold" x1="22" y1="18" x2="94" y2="121" gradientUnits="userSpaceOnUse"><stop stop-color="#fffefb"/><stop offset=".22" stop-color="#f6ead4"/><stop offset=".48" stop-color="#d2a85f"/><stop offset=".66" stop-color="#fff1cf"/><stop offset=".84" stop-color="#b57d32"/><stop offset="1" stop-color="#7d5225"/></linearGradient><linearGradient id="jdToothShine" x1="30" y1="20" x2="76" y2="112" gradientUnits="userSpaceOnUse"><stop stop-color="white" stop-opacity="1"/><stop offset=".35" stop-color="white" stop-opacity=".24"/><stop offset="1" stop-color="white" stop-opacity="0"/></linearGradient></defs><path class="jd-tooth-main" d="M37 14c13.5 0 18 8 23 8 5.2 0 9.6-8 23-8 19 0 31.4 15.3 27.7 35.6-2.6 14.7-11.7 24-16 39.5-5.8 20.1-12.4 32.4-22.6 32.4-8.2 0-9.4-22.4-15.2-22.4s-6.9 22.4-15.2 22.4c-10.3 0-16.8-12.3-22.6-32.4C14.1 73.6 5 64.3 2.3 49.6-1.3 29.3 11 14 37 14Z" fill="url(#jdToothGold)"/><path class="jd-tooth-highlight" d="M31 26c8-5 15-1 22 2 6 3 13-5 24-4 14 2 21 13 18 28-2 11-8 18-11 27" fill="none" stroke="url(#jdToothShine)" stroke-width="6" stroke-linecap="round"/></svg>
-    </div>
-    <div class="jd-particles"></div>
-    <span class="jd-spark jd-spark-1"></span><span class="jd-spark jd-spark-2"></span><span class="jd-spark jd-spark-3"></span>
-  </div>`;
-document.body.appendChild(transition);
+// JUST DENT unified loader collection: pearl enamel + restrained gold.
+const loaderStyle=document.createElement('style');
+loaderStyle.textContent=`
+.jd-smart-loader{position:fixed;inset:0;z-index:20000;display:grid;place-items:center;opacity:0;visibility:hidden;pointer-events:none;background:rgba(22,20,18,.76);backdrop-filter:blur(18px) saturate(.78);-webkit-backdrop-filter:blur(18px) saturate(.78);transition:opacity .28s cubic-bezier(.22,1,.36,1),visibility .28s linear;overflow:hidden}.jd-smart-loader.is-visible{opacity:1;visibility:visible;pointer-events:all}.jd-smart-loader:before{content:"";position:absolute;inset:-25%;background:radial-gradient(circle at 50% 46%,rgba(255,247,229,.14),transparent 19%),radial-gradient(circle at 28% 28%,rgba(213,178,111,.08),transparent 28%),radial-gradient(circle at 76% 74%,rgba(255,255,255,.07),transparent 30%);filter:blur(36px);animation:jdLoaderFog 4s ease-in-out infinite}.jd-loader-shell{position:relative;width:min(270px,70vw);height:270px;display:grid;place-items:center;perspective:1100px}.jd-loader-aura{position:absolute;width:172px;height:172px;border-radius:50%;background:radial-gradient(circle,rgba(255,244,219,.26),rgba(198,153,79,.10) 44%,transparent 72%);filter:blur(5px);animation:jdLoaderAura 1.55s ease-in-out infinite}.jd-loader-orbit{position:absolute;width:186px;height:186px;border:1px solid rgba(222,188,126,.20);border-radius:50%;transform:rotateX(68deg);box-shadow:0 0 35px rgba(185,138,59,.05);animation:jdOrbit 3.4s linear infinite}.jd-loader-icon-wrap{position:relative;width:118px;height:138px;display:grid;place-items:center;transform-style:preserve-3d;animation:jdIconSpin 1.72s cubic-bezier(.55,.05,.25,.95) infinite;filter:drop-shadow(0 24px 28px rgba(0,0,0,.34))}.jd-loader-icon{width:112px;height:130px;overflow:visible}.jd-loader-icon .pearl{fill:url(#jdPearl);stroke:url(#jdGoldStroke);stroke-width:2.2;stroke-linejoin:round}.jd-loader-icon .gold{fill:url(#jdGold);stroke:#f1d59e;stroke-width:1}.jd-loader-icon .line{fill:none;stroke:url(#jdGoldStroke);stroke-width:4.2;stroke-linecap:round;stroke-linejoin:round}.jd-loader-icon .soft-line{fill:none;stroke:rgba(255,255,255,.80);stroke-width:2.3;stroke-linecap:round}.jd-loader-icon .dark-line{fill:none;stroke:rgba(91,61,28,.58);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}.jd-loader-label{position:absolute;top:222px;left:50%;transform:translateX(-50%);white-space:nowrap;color:#efe3ce;font:600 10px/1 Manrope,system-ui,sans-serif;letter-spacing:.28em;text-transform:uppercase;opacity:.82}.jd-loader-dots{position:absolute;top:244px;display:flex;gap:6px}.jd-loader-dots i{width:4px;height:4px;border-radius:50%;background:#d8b574;animation:jdDot 1.05s ease-in-out infinite}.jd-loader-dots i:nth-child(2){animation-delay:.13s}.jd-loader-dots i:nth-child(3){animation-delay:.26s}.jd-loader-spark{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff5d9;box-shadow:0 0 12px rgba(243,213,153,.9),0 0 24px rgba(185,138,59,.55);opacity:0}.jd-loader-spark.s1{right:42px;top:58px;animation:jdLoaderSpark 1.8s ease-in-out infinite}.jd-loader-spark.s2{left:48px;bottom:62px;animation:jdLoaderSpark 1.8s .65s ease-in-out infinite}.jd-loader-spark.s3{left:55px;top:64px;animation:jdLoaderSpark 1.8s 1.15s ease-in-out infinite}.jd-smart-loader.is-leaving .jd-loader-icon-wrap{animation:jdIconExit .38s cubic-bezier(.55,0,.3,1) forwards}.jd-smart-loader.is-leaving .jd-loader-aura{animation:jdAuraExit .38s ease forwards}@keyframes jdIconSpin{0%{transform:rotateX(-5deg) rotateY(0) translateY(0) scale(1)}25%{transform:rotateX(4deg) rotateY(90deg) translateY(-5px) scale(1.02)}50%{transform:rotateX(6deg) rotateY(180deg) translateY(-2px) scale(1)}75%{transform:rotateX(-3deg) rotateY(270deg) translateY(-6px) scale(1.02)}100%{transform:rotateX(-5deg) rotateY(360deg) translateY(0) scale(1)}}@keyframes jdLoaderAura{0%,100%{transform:scale(.84);opacity:.42}50%{transform:scale(1.15);opacity:.95}}@keyframes jdOrbit{to{transform:rotateX(68deg) rotateZ(360deg)}}@keyframes jdLoaderFog{0%,100%{transform:scale(.98) translate3d(-1%,0,0)}50%{transform:scale(1.05) translate3d(1.5%,-1%,0)}}@keyframes jdLoaderSpark{0%,20%,100%{opacity:0;transform:scale(.35)}42%{opacity:1;transform:scale(1.35)}60%{opacity:.28;transform:scale(.72)}}@keyframes jdDot{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}@keyframes jdIconExit{0%{opacity:1;filter:blur(0);transform:rotateY(0) scale(1)}100%{opacity:0;filter:blur(8px);transform:rotateY(105deg) scale(.72)}}@keyframes jdAuraExit{to{opacity:0;transform:scale(1.8)}}
+@media(max-width:700px){.jd-loader-shell{height:220px}.jd-loader-aura{width:142px;height:142px}.jd-loader-orbit{width:154px;height:154px}.jd-loader-icon-wrap{width:96px;height:116px}.jd-loader-icon{width:92px;height:108px}.jd-loader-label{top:185px}.jd-loader-dots{top:205px}}
+@media(prefers-reduced-motion:reduce){.jd-loader-icon-wrap,.jd-loader-aura,.jd-loader-orbit,.jd-loader-spark,.jd-smart-loader:before,.jd-loader-dots i{animation:none!important}.jd-smart-loader{transition-duration:.08s}}
+`;
+document.head.appendChild(loaderStyle);
 
-const particles=$('.jd-particles',transition);
-for(let i=0;i<58;i++){
-  const p=document.createElement('i');p.className='jd-particle';
-  const a=(i/58)*Math.PI*2+(i%5)*.11;const ring=20+(i%7)*5.3;
-  const sx=Math.cos(a)*ring*.72,sy=Math.sin(a)*ring*.95;
-  const distance=78+(i%9)*12;
-  const tx=Math.cos(a)*distance+(i%3-1)*18,ty=Math.sin(a)*distance+(i%4-1.5)*14;
-  p.style.setProperty('--sx',`${sx.toFixed(1)}px`);p.style.setProperty('--sy',`${sy.toFixed(1)}px`);
-  p.style.setProperty('--tx',`${tx.toFixed(1)}px`);p.style.setProperty('--ty',`${ty.toFixed(1)}px`);
-  p.style.setProperty('--rot',`${(i%2?1:-1)*(90+(i%8)*47)}deg`);p.style.setProperty('--delay',`${(i%8)*14}ms`);
-  p.style.setProperty('--size',`${4+(i%5)*1.5}px`);particles.appendChild(p);
-}
+const defs=`<defs><linearGradient id="jdPearl" x1="18" y1="8" x2="94" y2="126" gradientUnits="userSpaceOnUse"><stop stop-color="#fffefb"/><stop offset=".22" stop-color="#f8f1e7"/><stop offset=".5" stop-color="#e7dbc9"/><stop offset=".72" stop-color="#fffaf1"/><stop offset="1" stop-color="#cdbda8"/></linearGradient><linearGradient id="jdGold" x1="16" y1="10" x2="100" y2="124" gradientUnits="userSpaceOnUse"><stop stop-color="#f5dfad"/><stop offset=".30" stop-color="#c99b4e"/><stop offset=".58" stop-color="#f0d293"/><stop offset="1" stop-color="#8d6129"/></linearGradient><linearGradient id="jdGoldStroke" x1="12" y1="10" x2="104" y2="128" gradientUnits="userSpaceOnUse"><stop stop-color="#f6dda8"/><stop offset=".42" stop-color="#b88438"/><stop offset=".72" stop-color="#e9c77f"/><stop offset="1" stop-color="#825522"/></linearGradient></defs>`;
 
-const progress=document.createElement('div');progress.className='jd-scroll-progress';progress.innerHTML='<span></span>';document.body.appendChild(progress);const progressBar=$('span',progress);
+const iconSvg={
+ tooth:`<svg class="jd-loader-icon" viewBox="0 0 120 140">${defs}<path class="pearl" d="M37 14c13.5 0 18 8 23 8 5.2 0 9.6-8 23-8 19 0 31.4 15.3 27.7 35.6-2.6 14.7-11.7 24-16 39.5-5.8 20.1-12.4 32.4-22.6 32.4-8.2 0-9.4-22.4-15.2-22.4s-6.9 22.4-15.2 22.4c-10.3 0-16.8-12.3-22.6-32.4C14.1 73.6 5 64.3 2.3 49.6-1.3 29.3 11 14 37 14Z"/><path class="soft-line" d="M29 28c12-8 20 3 31 3 10 0 15-9 28-3"/></svg>`,
+ dollar:`<svg class="jd-loader-icon" viewBox="0 0 120 140">${defs}<circle class="gold" cx="60" cy="70" r="44"/><circle cx="60" cy="70" r="34" fill="url(#jdPearl)" stroke="rgba(115,77,34,.45)" stroke-width="1.5"/><path class="line" d="M72 53c-4-5-10-8-17-7-8 1-13 5-13 11 0 8 8 11 18 13 10 2 18 5 18 13 0 7-6 12-16 13-9 1-17-2-22-8M60 39v62"/><path class="soft-line" d="M39 42c11-11 31-15 47-5"/></svg>`,
+ doctor:`<svg class="jd-loader-icon" viewBox="0 0 120 140">${defs}<circle class="pearl" cx="60" cy="39" r="23"/><path class="pearl" d="M24 126c1-31 13-52 36-52s35 21 36 52H24Z"/><path class="line" d="M46 79l14 17 14-17M60 96v30"/><path class="dark-line" d="M39 90c-7 5-10 14-8 24m50-24c7 5 10 14 8 24"/><circle class="gold" cx="88" cy="112" r="7"/><path class="soft-line" d="M44 35c6-8 22-11 31-3"/></svg>`,
+ services:`<svg class="jd-loader-icon" viewBox="0 0 120 140">${defs}<circle class="pearl" cx="79" cy="42" r="25"/><circle cx="79" cy="42" r="15" fill="rgba(255,255,255,.26)" stroke="url(#jdGoldStroke)" stroke-width="3"/><path class="gold" d="M62 61l10 8-30 49c-3 5-9 6-13 3-4-3-5-9-2-13l35-47Z"/><path class="line" d="M84 91c11-15 18-28 24-45"/><path class="line" d="M84 91l-8 19"/><path class="soft-line" d="M68 22c8-7 20-5 27 1"/></svg>`,
+ location:`<svg class="jd-loader-icon" viewBox="0 0 120 140">${defs}<path class="pearl" d="M60 12c25 0 43 18 43 42 0 31-43 72-43 72S17 85 17 54c0-24 18-42 43-42Z"/><circle class="gold" cx="60" cy="54" r="15"/><circle cx="60" cy="54" r="7" fill="#fffaf0"/><path class="soft-line" d="M33 42c7-15 24-23 39-18"/></svg>`,
+ clinic:`<svg class="jd-loader-icon" viewBox="0 0 120 140">${defs}<path class="pearl" d="M24 34h72v92H24z"/><path class="gold" d="M45 13h30v35H45z"/><path fill="#fff8e9" d="M56 19h8v23h-8zM49 27h22v8H49z"/><path class="line" d="M40 64h12M68 64h12M40 82h12M68 82h12M54 126V98h12v28"/><path class="soft-line" d="M33 43h48"/></svg>`,
+ calendar:`<svg class="jd-loader-icon" viewBox="0 0 120 140">${defs}<rect class="pearl" x="18" y="28" width="84" height="94" rx="16"/><path class="gold" d="M18 50h84v17H18z"/><path class="line" d="M39 18v22M81 18v22"/><path class="line" d="M39 84l13 13 29-29"/><path class="soft-line" d="M31 77h11"/></svg>`
+};
 
-requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>transition.classList.remove('is-arriving'),620)));
-window.addEventListener('pageshow',()=>{transition.classList.remove('is-active','is-shattering');setTimeout(()=>transition.classList.remove('is-arriving'),220)});
+const pageInfo={
+ 'index.html':['tooth','JUST DENT'], '':['tooth','JUST DENT'],
+ 'about.html':['clinic','Про клініку'],
+ 'services.html':['services','Послуги'],
+ 'cases.html':['tooth','Наші роботи'],
+ 'doctors.html':['doctor','Наші лікарі'],
+ 'prices.html':['dollar','Прайс'],
+ 'contacts.html':['location','Контакти']
+};
+function targetInfo(href){let u;try{u=new URL(href,location.href)}catch{return ['tooth','JUST DENT']}const file=u.pathname.split('/').pop()||'index.html';if(u.hash==='#appointment')return ['calendar','Запис на прийом'];return pageInfo[file]||['tooth','JUST DENT']}
 
-function isInternalNavigation(a,e){if(!a||a.target==='_blank'||a.hasAttribute('download')||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return false;const raw=a.getAttribute('href');if(!raw||raw.startsWith('#')||raw.startsWith('mailto:')||raw.startsWith('tel:')||raw.startsWith('javascript:'))return false;let url;try{url=new URL(a.href,location.href)}catch{return false}if(url.origin!==location.origin)return false;if(url.pathname===location.pathname&&url.search===location.search&&url.hash)return false;return true}
+const smartLoader=document.createElement('div');smartLoader.className='jd-smart-loader';smartLoader.setAttribute('aria-hidden','true');smartLoader.innerHTML=`<div class="jd-loader-shell"><div class="jd-loader-aura"></div><div class="jd-loader-orbit"></div><div class="jd-loader-icon-wrap"></div><span class="jd-loader-spark s1"></span><span class="jd-loader-spark s2"></span><span class="jd-loader-spark s3"></span><div class="jd-loader-label"></div><div class="jd-loader-dots"><i></i><i></i><i></i></div></div>`;document.body.appendChild(smartLoader);
+const iconHost=$('.jd-loader-icon-wrap',smartLoader),loaderLabel=$('.jd-loader-label',smartLoader);
+function setLoader(kind,label){iconHost.innerHTML=iconSvg[kind]||iconSvg.tooth;loaderLabel.textContent=label||'JUST DENT'}
+function showLoader(kind,label){setLoader(kind,label);smartLoader.classList.remove('is-leaving');void smartLoader.offsetWidth;smartLoader.classList.add('is-visible')}
+function hideLoader(){smartLoader.classList.add('is-leaving');setTimeout(()=>smartLoader.classList.remove('is-visible','is-leaving'),300)}
 
-document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!isInternalNavigation(a,e))return;e.preventDefault();transition.classList.remove('is-arriving','is-shattering');void transition.offsetWidth;transition.classList.add('is-active');setTimeout(()=>transition.classList.add('is-shattering'),250);setTimeout(()=>{location.href=a.href},910)});
+// Disable the older generic tooth overlay if effects.css/script cache left one behind.
+const oldTransition=$('.jd-page-transition');if(oldTransition)oldTransition.remove();
+
+// Arrival loader matches the current destination page.
+const arrival=targetInfo(location.href);showLoader(arrival[0],arrival[1]);setTimeout(hideLoader,430);
+window.addEventListener('pageshow',()=>setTimeout(()=>smartLoader.classList.remove('is-visible','is-leaving'),180));
+
+function shouldHandleLink(a,e){if(!a||a.target==='_blank'||a.hasAttribute('download')||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return false;const raw=a.getAttribute('href');if(!raw||raw.startsWith('mailto:')||raw.startsWith('tel:')||raw.startsWith('javascript:'))return false;let u;try{u=new URL(a.href,location.href)}catch{return false}return u.origin===location.origin}
+
+document.addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!shouldHandleLink(a,e))return;const u=new URL(a.href,location.href);const samePage=u.pathname===location.pathname&&u.search===location.search;
+ if(samePage&&u.hash){e.preventDefault();e.stopImmediatePropagation();const info=u.hash==='#appointment'?['calendar','Запис на прийом']:targetInfo(location.href);showLoader(info[0],info[1]);setTimeout(()=>{document.querySelector(u.hash)?.scrollIntoView({behavior:'smooth',block:'start'});history.pushState(null,'',u.hash)},360);setTimeout(hideLoader,760);return}
+ if(samePage&&!u.hash)return;
+ e.preventDefault();e.stopImmediatePropagation();const info=targetInfo(a.href);showLoader(info[0],info[1]);setTimeout(()=>smartLoader.classList.add('is-leaving'),520);setTimeout(()=>{location.href=a.href},760)
+},true);
 
 // Mobile menu.
-const menuBtn=$('.menu-btn');const nav=$('.main-nav');
-menuBtn?.addEventListener('click',()=>{const open=nav.classList.toggle('open');menuBtn.setAttribute('aria-expanded',open?'true':'false')});
-$$('.main-nav a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menuBtn?.setAttribute('aria-expanded','false')}));
+const menuBtn=$('.menu-btn');const nav=$('.main-nav');menuBtn?.addEventListener('click',()=>{const open=nav.classList.toggle('open');menuBtn.setAttribute('aria-expanded',open?'true':'false')});$$('.main-nav a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menuBtn?.setAttribute('aria-expanded','false')}));
 
 // Scroll reveals.
-const revealObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObserver.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -5% 0px'});
-$$('.reveal').forEach(el=>revealObserver.observe(el));
+const revealObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObserver.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -5% 0px'});$$('.reveal').forEach(el=>revealObserver.observe(el));
+const fxSelectors=['.section-head','.page-hero > .container','.service-card','.doctor-card','.review-card','.stat-card','.before-after','.price-inner','.appointment-card','.footer-grid > *','.page-card','.contact-card','.price-card','.case-card'];const fxCandidates=$$(fxSelectors.join(',')).filter(el=>!el.classList.contains('reveal'));fxCandidates.forEach((el,i)=>{el.classList.add('fx-auto');const box=el.getBoundingClientRect(),center=box.left+box.width/2,viewport=innerWidth/2;let fx='up';if(innerWidth>760){if(center<viewport*.72)fx='left';else if(center>viewport*1.28)fx='right';else if(i%4===0)fx='zoom'}el.dataset.fx=fx;el.style.setProperty('--fx-delay',`${(i%4)*70}ms`)});const fxObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('fx-visible');fxObserver.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -4% 0px'});$$('.fx-auto').forEach(el=>fxObserver.observe(el));
 
-const fxSelectors=['.section-head','.page-hero > .container','.service-card','.doctor-card','.review-card','.stat-card','.before-after','.price-inner','.appointment-card','.footer-grid > *','.page-card','.contact-card','.price-card','.case-card'];
-const fxCandidates=$$(fxSelectors.join(',')).filter(el=>!el.classList.contains('reveal'));
-fxCandidates.forEach((el,i)=>{el.classList.add('fx-auto');const box=el.getBoundingClientRect();const center=box.left+box.width/2;const viewport=innerWidth/2;let fx='up';if(innerWidth>760){if(center<viewport*.72)fx='left';else if(center>viewport*1.28)fx='right';else if(i%4===0)fx='zoom'}el.dataset.fx=fx;el.style.setProperty('--fx-delay',`${(i%4)*70}ms`)});
-const fxObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('fx-visible');fxObserver.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -4% 0px'});
-$$('.fx-auto').forEach(el=>fxObserver.observe(el));
-['.stats-grid','.services-grid','.doctors-grid','.reviews-grid','.footer-grid'].forEach(sel=>{$(sel)?.querySelectorAll(':scope > *').forEach((el,i)=>{if(!el.style.transitionDelay)el.style.transitionDelay=`${Math.min(i,5)*65}ms`})});
+// Counters that always stay inside their cards.
+function formatNumber(n){return new Intl.NumberFormat('uk-UA').format(n)}function fitNumber(el){el.style.fontSize='';let size=parseFloat(getComputedStyle(el).fontSize);while(el.scrollWidth>el.clientWidth&&size>22){size-=1;el.style.fontSize=size+'px'}}function animateCounter(el){if(el.dataset.done)return;el.dataset.done='1';const target=Number(el.dataset.target||0),suffix=el.dataset.suffix||'',start=performance.now(),dur=1300;function frame(now){const p=Math.min(1,(now-start)/dur),eased=1-Math.pow(1-p,3);el.textContent=formatNumber(Math.round(target*eased))+suffix;fitNumber(el);if(p<1)requestAnimationFrame(frame)}requestAnimationFrame(frame)}const counterObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){animateCounter(e.target);counterObserver.unobserve(e.target)}})},{threshold:.45});$$('.stat-number').forEach(el=>counterObserver.observe(el));window.addEventListener('resize',()=>$$('.fit-number').forEach(fitNumber));
 
-// Hero/page title disintegration while scrolling away.
-function splitTitle(el){if(!el||el.dataset.jdSplit)return;el.dataset.jdSplit='1';el.setAttribute('aria-label',el.textContent.trim());const walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);let idx=0;nodes.forEach(node=>{const frag=document.createDocumentFragment();[...node.textContent].forEach(ch=>{if(/\s/.test(ch)){frag.appendChild(document.createTextNode(ch));return}const s=document.createElement('span');s.className='jd-letter';s.textContent=ch;const seed=idx++;const side=seed%2?1:-1;s.dataset.dx=String(side*(16+(seed%7)*7));s.dataset.dy=String(-8+(seed%9)*8);s.dataset.rot=String(side*(4+(seed%6)*5));frag.appendChild(s)});node.replaceWith(frag)});el.dataset.jdLetters=idx}
-const scatterTitles=$$('.hero h1,.page-hero h1');scatterTitles.forEach(splitTitle);
-function paintTitleScatter(){scatterTitles.forEach(title=>{const host=title.closest('.hero,.page-hero')||title.parentElement;const r=host.getBoundingClientRect();const start=Math.max(30,innerHeight*.04);const travel=Math.max(170,Math.min(r.height*.52,360));const p=Math.max(0,Math.min(1,(start-r.top)/travel));title.style.setProperty('--jd-scatter',p.toFixed(3));$$('.jd-letter',title).forEach((l,i)=>{const local=Math.max(0,Math.min(1,(p-(i%7)*.012)/.92));const ease=local*local*(3-2*local);const dx=Number(l.dataset.dx)*ease,dy=Number(l.dataset.dy)*ease,rot=Number(l.dataset.rot)*ease;l.style.transform=`translate3d(${dx}px,${dy}px,0) rotate(${rot}deg) scale(${1-ease*.08})`;l.style.filter=`blur(${(ease*7).toFixed(2)}px)`;l.style.opacity=String(Math.max(.03,1-ease*.97))})})}
-
-// Counters that always fit their cards.
-function formatNumber(n){return new Intl.NumberFormat('uk-UA').format(n)}
-function fitNumber(el){el.style.fontSize='';let size=parseFloat(getComputedStyle(el).fontSize);const min=22;while(el.scrollWidth>el.clientWidth&&size>min){size-=1;el.style.fontSize=size+'px'}}
-function animateCounter(el){if(el.dataset.done)return;el.dataset.done='1';const target=Number(el.dataset.target||0),suffix=el.dataset.suffix||'',start=performance.now(),dur=1300;function frame(now){const p=Math.min(1,(now-start)/dur),eased=1-Math.pow(1-p,3);el.textContent=formatNumber(Math.round(target*eased))+suffix;fitNumber(el);if(p<1)requestAnimationFrame(frame)}requestAnimationFrame(frame)}
-const counterObserver=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){animateCounter(e.target);counterObserver.unobserve(e.target)}})},{threshold:.45});
-$$('.stat-number').forEach(el=>counterObserver.observe(el));window.addEventListener('resize',()=>$$('.fit-number').forEach(fitNumber));
-
-// Before / after sliders.
+// Before/after sliders.
 $$('[data-slider]').forEach(slider=>{const input=$('input',slider),after=$('.ba-after',slider),divider=$('.ba-divider',slider);if(!input||!after||!divider)return;const update=()=>{const v=input.value;after.style.clipPath=`inset(0 0 0 ${v}%)`;divider.style.left=v+'%'};input.addEventListener('input',update,{passive:true});update()});
 
-// Header, progress, parallax and title scatter in one RAF.
-const header=$('.site-header'),hero=$('.hero-visual'),orbA=$('.hero-orb-a'),orbB=$('.hero-orb-b'),heroNote=$('.hero-note');let ticking=false;
-function paintScroll(){const y=scrollY;header?.classList.toggle('jd-scrolled',y>18);const doc=document.documentElement,max=Math.max(1,doc.scrollHeight-innerHeight);progressBar.style.transform=`scaleX(${Math.min(1,y/max)})`;paintTitleScatter();if(hero&&y<innerHeight*1.3&&matchMedia('(min-width:701px)').matches){if(orbA)orbA.style.transform=`translate3d(0,${y*.045}px,0)`;if(orbB)orbB.style.transform=`translate3d(0,${y*-.035}px,0)`;if(heroNote)heroNote.style.transform=`translate3d(0,${y*.028}px,0) rotate(-5deg)`}ticking=false}
-window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(paintScroll);ticking=true}},{passive:true});window.addEventListener('resize',paintScroll,{passive:true});paintScroll();
+// Header + scroll progress.
+const progress=document.createElement('div');progress.className='jd-scroll-progress';progress.innerHTML='<span></span>';document.body.appendChild(progress);const progressBar=$('span',progress),header=$('.site-header');let ticking=false;function paintScroll(){const y=scrollY;header?.classList.toggle('jd-scrolled',y>18);const doc=document.documentElement,max=Math.max(1,doc.scrollHeight-innerHeight);progressBar.style.transform=`scaleX(${Math.min(1,y/max)})`;ticking=false}window.addEventListener('scroll',()=>{if(!ticking){requestAnimationFrame(paintScroll);ticking=true}},{passive:true});paintScroll();
 
-if(hero&&matchMedia('(hover:hover) and (min-width:901px)').matches){hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;hero.style.setProperty('--jd-rx',`${(-y*2.2).toFixed(2)}deg`);hero.style.setProperty('--jd-ry',`${(x*2.8).toFixed(2)}deg`);hero.classList.add('jd-tilt')});hero.addEventListener('pointerleave',()=>{hero.style.setProperty('--jd-rx','0deg');hero.style.setProperty('--jd-ry','0deg');setTimeout(()=>hero.classList.remove('jd-tilt'),220)})}
-
-document.addEventListener('pointerdown',e=>{const btn=e.target.closest('.btn');if(!btn)return;const r=btn.getBoundingClientRect(),ripple=document.createElement('span');ripple.className='jd-ripple';ripple.style.left=`${e.clientX-r.left}px`;ripple.style.top=`${e.clientY-r.top}px`;btn.appendChild(ripple);setTimeout(()=>ripple.remove(),760)});
-$('[data-form-submit]')?.addEventListener('click',()=>{const status=$('.form-status');if(status)status.textContent='Демо-форма: підключимо Telegram, Viber або Cliniccards після додавання контактів.'});
+// Button ripple + demo form feedback.
+document.addEventListener('pointerdown',e=>{const btn=e.target.closest('.btn');if(!btn)return;const r=btn.getBoundingClientRect(),ripple=document.createElement('span');ripple.className='jd-ripple';ripple.style.left=`${e.clientX-r.left}px`;ripple.style.top=`${e.clientY-r.top}px`;btn.appendChild(ripple);setTimeout(()=>ripple.remove(),760)});$('[data-form-submit]')?.addEventListener('click',()=>{const status=$('.form-status');if(status)status.textContent='Демо-форма: підключимо Telegram, Viber або Cliniccards після додавання контактів.'});
