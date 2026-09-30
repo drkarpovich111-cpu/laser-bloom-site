@@ -106,6 +106,12 @@ async def urgent(chat_id: int, text: str):
 
 
 async def handle_text(chat_id: int, text: str):
+    if text == "/myid":
+        if chat_id > 0:
+            await send(chat_id, f"Ваш Telegram ID: <code>{chat_id}</code>")
+        else:
+            await send(chat_id, "Напишіть /myid в особистому чаті з JUST DENT.")
+        return
     s = st(chat_id)
     if text == "/start":
         await start_flow(chat_id); return
