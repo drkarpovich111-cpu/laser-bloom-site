@@ -1,4 +1,5 @@
 /* JUST DENT motion system */
+@import url('clinic-photo.css');
 :root{--jd-ease:cubic-bezier(.22,1,.36,1);--jd-gold:#b98a3b;--jd-gold-soft:#ddb978;--jd-cream:#f8f3eb;--jd-ink:#1f1b17}
 
 /* Page transition / 3D tooth loader */
