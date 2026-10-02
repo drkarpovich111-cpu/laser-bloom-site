@@ -595,7 +595,7 @@ async def startup():
     if BOT_TOKEN and PUBLIC_URL:
         payload = {
             "url": f"{PUBLIC_URL}/telegram",
-            "drop_pending_updates": True,
+            "drop_pending_updates": False,
             "allowed_updates": ["message", "callback_query"],
         }
         if WEBHOOK_SECRET:
@@ -604,3 +604,9 @@ async def startup():
             await tg("setWebhook", payload)
         except Exception as e:
             print("Webhook setup failed:", repr(e))
+
+
+
+# Website requests use a separate owner-only delivery flow.
+from .website_booking import register as register_website_booking
+register_website_booking(app, tg, lambda: bool(BOT_TOKEN))
