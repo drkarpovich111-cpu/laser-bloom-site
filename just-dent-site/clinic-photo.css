@@ -1,6 +1,6 @@
 /* JUST DENT real clinic exterior + premium social dock */
 .photo-placeholder{
-  background-image:linear-gradient(180deg,rgba(10,11,13,.02) 0%,rgba(10,11,13,.08) 58%,rgba(10,11,13,.34) 100%),url("clinic-exterior.webp")!important;
+  background-image:linear-gradient(180deg,rgba(10,11,13,.02) 0%,rgba(10,11,13,.08) 58%,rgba(10,11,13,.34) 100%),url("clinic-exterior.jpg")!important;
   background-size:cover!important;
   background-position:center 44%!important;
   background-repeat:no-repeat!important;
