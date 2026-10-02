@@ -70,10 +70,7 @@
     const changed=new Map();
     if(JSON.stringify(normalized)!==JSON.stringify(originalPrices)){
       changed.set('prices-data.js','window.JD_PRICES='+JSON.stringify(normalized)+';\n');
-      const doc=docs.get('prices'),count=normalized.reduce((n,g)=>n+g.items.length,0);
-      doc.querySelector('.page-art-copy strong').textContent=`${count} позицій`;
-      doc.querySelector('.page-art-copy span').textContent=`Напрямів лікування: ${normalized.length}.`;
-      doc.querySelector('.price-meta').textContent=`Український прайс · ${count} позицій`;
+
     }
     for(const [id,doc]of docs){for(const a of doc.querySelectorAll('main a[href],footer a[href]'))if(!safeLink(a.getAttribute('href')))throw Error(`Перевірте посилання на сторінці «${pages.find(p=>p[0]===id)[1]}».`);const original=new DOMParser().parseFromString(baseline.get(id+'.html').text,'text/html');if(serialize(doc)!==serialize(original))changed.set(id+'.html',serialize(doc));}
     return changed;
@@ -105,3 +102,4 @@
   };
   $('#closePreview').onclick=()=>$('#previewDialog').close();
 })();
+
