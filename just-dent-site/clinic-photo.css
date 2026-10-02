@@ -1,17 +1,27 @@
 /* JUST DENT real clinic exterior + premium social dock */
 .photo-placeholder{
-  background-image:linear-gradient(180deg,rgba(10,11,13,.02) 0%,rgba(10,11,13,.08) 58%,rgba(10,11,13,.34) 100%),url("clinic-exterior.jpg?v=20261002")!important;
+  position:absolute;
+  inset:34px;
+  overflow:hidden;
+  background-image:linear-gradient(180deg,rgba(10,11,13,.02) 0%,rgba(10,11,13,.08) 58%,rgba(10,11,13,.34) 100%),url("images/uploads/0c83de72-c875-4051-abed-e275f6f30c34.webp?v=20261002b")!important;
   background-size:cover!important;
   background-position:center 44%!important;
   background-repeat:no-repeat!important;
   border-color:rgba(223,189,121,.24)!important;
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 28px 64px rgba(0,0,0,.18);
 }
+.photo-placeholder::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background:linear-gradient(180deg,rgba(10,11,13,.01),rgba(10,11,13,.07) 60%,rgba(10,11,13,.28)),url("images/uploads/0c83de72-c875-4051-abed-e275f6f30c34.webp?v=20261002b") center 44%/cover no-repeat;
+  pointer-events:none;
+}
 .photo-placeholder .photo-topline,.photo-placeholder .smile-mark,.photo-placeholder p{display:none!important}
 .hero-visual:has(.photo-placeholder){background:linear-gradient(145deg,#17181c,#202126 60%,#2d241a)}
 .hero-visual .hero-note{right:30px;top:auto;bottom:28px;width:auto;max-width:230px;padding:11px 15px;border-radius:16px;background:rgba(16,17,20,.68);border:1px solid rgba(223,189,121,.18);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-family:Manrope,system-ui,sans-serif;font-style:normal;font-size:12px;line-height:1.35;letter-spacing:.02em;transform:none;color:#efe7da;box-shadow:0 12px 28px rgba(0,0,0,.24)}
 
-/* Homepage doctor cards: real high-quality portraits instead of letter placeholders. */
 .doctors-grid .doctor-card .doctor-photo{background-size:cover!important;background-repeat:no-repeat!important;background-position:center 16%!important;border-color:rgba(223,189,121,.14)!important}
 .doctors-grid .doctor-card .doctor-photo span{display:none!important}
 .doctors-grid .doctor-card:nth-child(1) .doctor-photo{background-image:url("images/doctors/rostyslav-hq.avif")!important}
@@ -19,43 +29,10 @@
 .doctors-grid .doctor-card:nth-child(3) .doctor-photo{background-image:url("images/doctors/vlad-hq.avif")!important}
 .doctors-grid .doctor-card:nth-child(4) .doctor-photo{background-image:url("images/doctors/andriy-hq.avif")!important}
 
-.footer-socials{
-  position:fixed!important;
-  right:22px;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:46;
-  display:flex!important;
-  flex-direction:column;
-  gap:9px!important;
-  margin:0!important;
-  padding:8px;
-  border-radius:999px;
-  background:rgba(18,19,22,.76);
-  border:1px solid rgba(223,189,121,.16);
-  backdrop-filter:blur(18px) saturate(.9);
-  -webkit-backdrop-filter:blur(18px) saturate(.9);
-  box-shadow:0 16px 42px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04);
-}
-.footer-social{
-  width:44px!important;
-  height:44px!important;
-  margin:0!important;
-  border-color:rgba(223,189,121,.14)!important;
-  background:rgba(255,255,255,.035)!important;
-  color:#efe7db!important;
-  transition:transform .28s cubic-bezier(.22,1,.36,1),border-color .28s ease,background .28s ease,box-shadow .28s ease,color .28s ease!important;
-}
+.footer-socials{position:fixed!important;right:22px;top:50%;transform:translateY(-50%);z-index:46;display:flex!important;flex-direction:column;gap:9px!important;margin:0!important;padding:8px;border-radius:999px;background:rgba(18,19,22,.76);border:1px solid rgba(223,189,121,.16);backdrop-filter:blur(18px) saturate(.9);-webkit-backdrop-filter:blur(18px) saturate(.9);box-shadow:0 16px 42px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04)}
+.footer-social{width:44px!important;height:44px!important;margin:0!important;border-color:rgba(223,189,121,.14)!important;background:rgba(255,255,255,.035)!important;color:#efe7db!important;transition:transform .28s cubic-bezier(.22,1,.36,1),border-color .28s ease,background .28s ease,box-shadow .28s ease,color .28s ease!important}
 .footer-social:hover{transform:translateY(-2px) scale(1.06)!important;background:rgba(199,154,74,.10)!important;border-color:rgba(223,189,121,.44)!important;box-shadow:0 10px 26px rgba(0,0,0,.26),0 0 22px rgba(199,154,74,.10)!important}
 .footer-social.instagram:hover{color:#f0c4d5!important}.footer-social.tiktok:hover{color:#dff7f5!important}
 
-@media(max-width:900px){
-  .photo-placeholder{background-position:center 38%!important}
-  .footer-socials{top:auto;right:14px;bottom:18px;transform:none;flex-direction:row;padding:7px;gap:7px!important}
-  .footer-social{width:42px!important;height:42px!important}
-}
-@media(max-width:520px){
-  .hero-visual .hero-note{right:18px;bottom:18px;max-width:190px;font-size:11px}
-  .footer-socials{right:12px;bottom:14px}
-  .doctors-grid .doctor-card .doctor-photo{background-position:center 14%!important}
-}
+@media(max-width:900px){.photo-placeholder{inset:16px;background-position:center 38%!important}.photo-placeholder::before{background-position:center 38%}.footer-socials{top:auto;right:14px;bottom:18px;transform:none;flex-direction:row;padding:7px;gap:7px!important}.footer-social{width:42px!important;height:42px!important}}
+@media(max-width:520px){.hero-visual .hero-note{right:18px;bottom:18px;max-width:190px;font-size:11px}.footer-socials{right:12px;bottom:14px}.doctors-grid .doctor-card .doctor-photo{background-position:center 14%!important}}
